@@ -43,6 +43,8 @@ inputs:
   image:
     description: 'Name of Docker image to run, ex: repo/image:latest'
     required: true
+  aws_assume_role_cmd:
+    description: '--aws-assume-role'
   aws_assume_role:
     description: 'ARN for AWS Role to assume for ecs-deploy operations.'
     required: false
@@ -73,6 +75,8 @@ inputs:
   tag_env_var:
     description: 'Get image tag name from environment variable. If provided this will override value specified in image name argument.'
     required: false
+  tag_only_cmd:
+    description: '--tag-only'
   tag_only:
     description: 'New tag to apply to all images defined in the task (multi-container task). If provided this will override value specified in image name argument.'
     required: false
@@ -91,6 +95,8 @@ inputs:
   use_latest_task_def:
     description: 'Will use the most recently created task definition as its base, rather than the last used.'
     required: false
+  force_new_deployment_cmd:
+    description: '--force-new-deployment'
   force_new_deployment:
     description: 'Force a new deployment of the service.'
     required: false
@@ -116,11 +122,11 @@ runs:
   args: [
     '${{ inputs.aws_access_key_cmd }}', '${{ inputs.aws_access_key }}',
     '${{ inputs.aws_secret_key_cmd }}', '${{ inputs.aws_secret_key }}',
-    '${{ inputs.enable_rollback_cmd }}', '${{ inputs.enable_rollback }}',
-    '${{ inputs.force_new_deployment_cmd }}', '${{ inputs.force_new_deployment }}',
     '${{ inputs.region_cmd }}', '${{ inputs.region }}',
     '${{ inputs.service_name_cmd }}', '${{ inputs.service_name }}',
     '${{ inputs.task_definition_cmd }}', '${{ inputs.task_definition }}',
+    '${{ inputs.enable_rollback_cmd }}', '${{ inputs.enable_rollback }}',
+    '${{ inputs.force_new_deployment_cmd }}', '${{ inputs.force_new_deployment }}',
     '${{ inputs.cluster_cmd }}', '${{ inputs.cluster }}',
     '${{ inputs.image_cmd }}', '${{ inputs.image }}',
     '${{ inputs.aws_assume_role_cmd }}', '${{ inputs.aws_assume_role }}',

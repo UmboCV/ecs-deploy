@@ -5,12 +5,20 @@ ecs-deploy
 
 This script uses the Task Definition and Service entities in Amazon's ECS to instigate an automatic blue/green deployment.
 
+NOTE: Maintenance Only
+----------------------
+
+`ecs-deploy` is now in maintenance mode. In other words, we are considering it
+"feature complete" and will generally only consider PRs if they are bugfixes or
+are to add support for new AWS CLI features.
+
 Usage
 -----
 
     One of the following is required:
-        -n | --service-name     Name of service to deploy
-        -d | --task-definition  Name of task definition to deploy
+        -n | --service-name           Name of service to deploy
+        -x | --service-name-prefix    Name prefix of service to deploy
+        -d | --task-definition        Name of task definition to deploy
 
     Required arguments:
         -k | --aws-access-key         AWS Access Key ID. May also be set as environment variable AWS_ACCESS_KEY_ID
@@ -37,11 +45,19 @@ Usage
                                       Note: This number must be 1 or higher (i.e. keep only the current revision ACTIVE).
                                             Max definitions causes all task revisions not matching criteria to be deregistered, even if they're created manually.
                                             Script will only perform deregistration if deployment succeeds.
+        --task-definition-file        File used as task definition to deploy
         --enable-rollback             Rollback task definition if new version is not running before TIMEOUT
         --use-latest-task-def         Will use the most recently created task definition as it's base, rather than the last used.
         --force-new-deployment        Force a new deployment of the service. Default is false.
         --skip-deployments-check      Skip deployments check for services that take too long to drain old tasks
         --run-task                    Run created task now. If you set this, service-name are not needed.
+        --wait-for-success            Wait for task execution to complete and to receive the exitCode 0.
+        --launch-type                 The launch type on which to run your task. (https://docs.aws.amazon.com/cli/latest/reference/ecs/run-task.html)
+        --platform-version            The Fargate platform version on which to run your task. (https://docs.aws.amazon.com/cli/latest/reference/ecs/run-task.html)
+        --network-configuration       The network configuration for the task. This parameter is required for task definitions that use
+                                          the awsvpc network mode to receive their own elastic network interface, and it is not supported
+                                          for other network modes. (https://docs.aws.amazon.com/cli/latest/reference/ecs/run-task.html)
+        --copy-task-definition-tags   Copy the existing task definition tags to the new task definition revision
         -v | --verbose                Verbose output
              --version                Display the version
 
