@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Setup default values for variables
-VERSION="3.10.5"
+VERSION="3.10.15"
 CLUSTER=false
 SERVICE=false
 SERVICE_PREFIX=false
@@ -390,7 +390,7 @@ function createNewTaskDefJson() {
 
     # Some options in task definition should only be included in new definition if present in
     # current definition. If found in current definition, append to JQ filter.
-    CONDITIONAL_OPTIONS=(networkMode taskRoleArn placementConstraints executionRoleArn runtimePlatform)
+    CONDITIONAL_OPTIONS=(networkMode taskRoleArn placementConstraints executionRoleArn runtimePlatform ephemeralStorage)
     for i in "${CONDITIONAL_OPTIONS[@]}"; do
       re=".*${i}.*"
       if [[ "$DEF" =~ $re ]]; then
@@ -420,7 +420,7 @@ function createNewTaskDefJson() {
 
 function registerNewTaskDefinition() {
     # Register the new task definition, and store its ARN
-    if [[ "$COPY_TASK_DEFINITION_TAGS" == true && "$TASK_DEFINITION_TAGS" != false ]]; then
+    if [[ "$COPY_TASK_DEFINITION_TAGS" == true && "$TASK_DEFINITION_TAGS" != false && "$TASK_DEFINITION_TAGS" != "[]" ]]; then
       NEW_TASKDEF=`$AWS_ECS register-task-definition --cli-input-json "$NEW_DEF" --tags "$TASK_DEFINITION_TAGS" | jq -r .taskDefinition.taskDefinitionArn`
     else
       NEW_TASKDEF=`$AWS_ECS register-task-definition --cli-input-json "$NEW_DEF" | jq -r .taskDefinition.taskDefinitionArn`
@@ -536,9 +536,9 @@ function waitForGreenDeployment {
   do
     NUM_DEPLOYMENTS=$($AWS_ECS describe-services --services $SERVICE --cluster $CLUSTER | jq "[.services[].deployments[]] | length")
 
-    # Wait to see if more than 1 deployment stays running
+    # Wait until 1 deployment stays running
     # If the wait time has passed, we need to roll back
-    if [ $NUM_DEPLOYMENTS -ge 1 ]; then
+    if [ $NUM_DEPLOYMENTS -eq 1 ]; then
       echo "Service deployment successful."
       DEPLOYMENT_SUCCESS="true"
       # Exit the loop.
